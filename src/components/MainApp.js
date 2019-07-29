@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import getSeries  from './fetchseries';
 const ReactHighcharts = require('react-highcharts/ReactHighstock');
 
-let seriesData = [];
 class MainApp extends Component {
   constructor(props) {
     super(props);
@@ -13,14 +12,19 @@ class MainApp extends Component {
   }
   
   componentDidMount() {
-    setInterval(()=>{this.props.dispatch(getSeries());},2000);
+    //setInterval(()=>{this.props.dispatch(getSeries());},5000);
   }
 
-  setChartConfig = (data) => {
-    seriesData = [];
-    seriesData.push(data);
-    let config = {};
-    config = {
+  toggleButton(){
+    this.setState((currentState) => ({
+        deSelectAll: !currentState.deSelectAll, 
+    }));
+    let chart = this.refs.chart1.getChart();
+    chart.legend.allItems.forEach(item => item.setVisible(this.state.deSelectAll, false));
+  }
+
+  render() {
+    let config = {
       chart : {
         type: 'area'
       },
@@ -59,11 +63,9 @@ class MainApp extends Component {
                       }
                       
                       if(curState != 0 && curState === len ){
-                        console.log("hello");
                           this.setState({  ...this.state, deSelectAll: false} );
                       } 
                       else if(curState === 0){
-                        console.log("hello2");
                           this.setState({  ...this.state, deSelectAll: true} );
                       }
                       
@@ -74,25 +76,16 @@ class MainApp extends Component {
         
         },
       },
-      series: seriesData,
+      series: [{
+        data : [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 295.6, 454.4]
+      }, { 
+        data : [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 295.6, 454.4]
+      }
+    ],
       legend: {
       enabled: true
     },
     }
-    return config;
-  }
-
-  toggleButton(){
-    this.setState((currentState) => ({
-        deSelectAll: !currentState.deSelectAll, 
-    }));
-    let chart = this.refs.chart1.getChart();
-    chart.legend.allItems.forEach(item => item.setVisible(this.state.deSelectAll, false));
-  }
-
-  render() {
-    //let config = this.setChartConfig(this.props.series);
-    console.log("config", config.series);
     return (
       <div>
         <ReactHighcharts config = {config} ref="chart1"/>
